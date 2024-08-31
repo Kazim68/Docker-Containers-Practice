@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  django:
+    build: ./backend
+    container_name: django-container
+    command: python manage.py runserver 127.0.0.0:8000
+    ports:
+      - 8001:8000
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+  react:
+    build: ./frontend
+    container_name: react-container
+    command: npm run dev
+    ports:
+      - 3001:3000
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - django
+  db:
+    image: postgres:16.1-alpine
+    container_name: db-container
+    ports:
+      - 5432:5432
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  node_modules:
+  postgres_data:
+  media:
+  static:
